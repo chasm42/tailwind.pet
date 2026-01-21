@@ -5,8 +5,13 @@
   <title>Yieldora - Compound Interest Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
-</head>
 
+  <script async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+  crossorigin="anonymous">
+</script>
+
+</head>
 
 <!-- HEADER -->
 <header class="site-header">
@@ -39,7 +44,7 @@
   Log in
 </span>
   <span class="theme-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
-    <svg class="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <svg class="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="5" />
       <g stroke-width="2" stroke-linecap="round">
         <line x1="12" y1="1" x2="12" y2="4"/>
@@ -72,6 +77,8 @@
   <div class="layout">
 
     <!-- INPUTS -->
+<div id="inputsWrapper" class="inputs-wrapper">
+
     <div class="container">
       <h1 style="text-align: left;">Investment Details</h1>
 
@@ -130,10 +137,31 @@
     <option value="1">Yearly</option>
   </select>
 </div>
+<div class="scenario-row">
+  <div class="scenario-switcher">
+    <span id="prevScenario" class="scenario-arrow">‹</span>
+
+    <span class="scenario-label">
+       <strong id="scenarioIndex"></strong>
+      <span class="scenario-total"></span>
+    </span>
+
+    <span id="nextScenario" class="scenario-arrow">›</span>
+  </div>
+
+  <span id="addScenario" class="scenario-add">
+    + Add comparison
+  </span>
+</div>
+
+
     </div>
+
+</div>
 
     <!-- CHART -->
     <div class="chart">
+          <div class="card chart-card">
 <div class="chart-menu">
   <button id="chartMenuBtn">☰</button>
   <div id="chartMenu" class="chart-menu-dropdown">
@@ -142,12 +170,27 @@
   </div>
 </div>
 
+      <div id="scenarioIndicator" class="scenario-indicator hidden">
+<span class="scenario-arrow prev">‹</span>
+
+  <span class="scenario-dot"></span>
+  <span class="scenario-text"></span>
+<span class="scenario-arrow next">›</span>
+
+</div>
+
+
+
 
       <div class="chart-total" id="chartTotal">Enter data to start</div>
       <canvas id="growthChart"></canvas>
-    </div>
 
   </div>
+    </div>
+</div>
+
+  
+
 </main>
 <div id="auth-overlay" class="auth-overlay hidden">
   <div class="auth-modal" id="authModal">
