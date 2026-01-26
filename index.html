@@ -40,9 +40,11 @@
   <div class="logo">Yieldora</div>
   </div>
   <div class="header-right">
+    <!---
     <span class="login-btn" onclick="openAuthModal()">
   Log in
 </span>
+-->
   <span class="theme-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
     <svg class="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="5" />
@@ -80,18 +82,17 @@
 <div id="inputsWrapper" class="inputs-wrapper">
 
     <div class="container">
+      
       <h1 style="text-align: left;">Investment Details</h1>
-
+  
 <label class="input-label">Initial Investment</label>
 <div class="money-inline">
   <span class="money-prefix">$</span>
   <input
-    type="number"
+    type="text"
+    inputmode="numeric"
     id="principal"
     value="2000"
-    min="1"
-    max="10000000"
-    step="100"
   />
 </div>
 
@@ -114,12 +115,10 @@
 <div class="money-inline">
   <span class="money-prefix">$</span>
   <input
-    type="number"
+    type="text"
+    inputmode="numeric"
     id="contributions"
     value="50"
-    min="0"
-    max="100000"
-    step="10"
     placeholder="0"
   />
 </div>
@@ -150,10 +149,13 @@
 
   </div>
   
-    </span>
-        <span id="addScenario" class="scenario-add">
+<div class="scenario-add-row">
+  <span id="addScenario" class="scenario-add">
     + Add comparison
   </span>
+</div>
+
+
   </div>
 
     <span id="nextScenario" class="scenario-arrow">›</span>

@@ -21,6 +21,9 @@ let activeScenarioIndex = 0;
 
 let supabaseClient;
 
+const STORAGE_KEY = "yieldora_state_v1";
+
+
 /* ===============================
    THEME
 ================================ */
@@ -123,6 +126,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   checkUser();
 
+
+if (!loadAppState()) {
+  // First visit defaults
+  scenarios = [createScenario()];
+  activeScenarioIndex = 0;
+}
+
+updateScenarioUI();
+calculateAll();
+
+
+
+
+  
   canvas = document.getElementById("growthChart");
   ctx = canvas.getContext("2d");
 
@@ -397,7 +414,7 @@ function updateScenarioUI() {
   /* ---------- UPDATE ADD/REMOVE BUTTON ---------- */
   if (addBtn) {
     if (total === 2) {
-      addBtn.textContent = "− Remove comparison";
+      addBtn.textContent = "× Remove comparison";
     } else {
       addBtn.textContent = "+ Add comparison";
     }
@@ -418,7 +435,6 @@ function updateScenarioUI() {
 
   calculateAll();
 }
-
 function saveInputsToScenario() {
   const s = scenarios[activeScenarioIndex];
 
@@ -429,14 +445,21 @@ function saveInputsToScenario() {
   const contributionFreq = document.getElementById("contributionFreq");
   const compoundFreq = document.getElementById("compoundFreq");
 
+  const newYears = years ? parseFloat(years.value.replace(/,/g, '')) || 0 : 30;
+
   s.inputs = {
     principal: principal ? parseFloat(principal.value.replace(/,/g, '')) || 0 : 10000,
     rate: rate ? parseFloat(rate.value.replace(/,/g, '')) || 0 : 7,
-    years: years ? parseFloat(years.value.replace(/,/g, '')) || 0 : 30,
+    years: newYears,
     contribution: contributions ? parseFloat(contributions.value.replace(/,/g, '')) || 0 : 0,
     contributionFreq: contributionFreq ? contributionFreq.value : "annual",
     compoundFreq: compoundFreq ? +compoundFreq.value : 12
   };
+
+  // Sync years across all scenarios
+  scenarios.forEach(scenario => {
+    scenario.inputs.years = newYears;
+  });
 }
 
 function calculateScenario(s) {
@@ -544,6 +567,8 @@ function render() {
     const i = scenarios.indexOf(s);
     drawContributionLine(s.contributionData, min, max, i);
     drawLine(s.data, min, max, i);
+    drawAreaFill(s.data, min, max, i); // 👈 ADD THIS
+
 
   });
 
@@ -583,8 +608,21 @@ function drawAxes(min, max) {
   ctx.fillText(`Year ${yearsTotal}`, canvasWidth() - padding - 56, canvasHeight() - 8);
 }
 
+function saveAppState() {
+  const state = {
+    activeScenarioIndex,
+    scenarios: scenarios.map(s => ({
+      inputs: { ...s.inputs }
+    }))
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
 function drawLine(lineData, min, max, scenarioIndex) {
   if (!lineData || !lineData.length) return;
+  saveAppState();
+  
   
   const isActive = scenarioIndex === activeScenarioIndex;
   const glowTime = Date.now() - (window.lastScenarioSwitch || 0);
@@ -612,7 +650,46 @@ function drawLine(lineData, min, max, scenarioIndex) {
   
   // Reset shadow
   ctx.shadowBlur = 0;
+  
 }
+
+function drawAreaFill(lineData, min, max, scenarioIndex) {
+  if (!lineData || lineData.length < 2) return;
+
+  const color = getLineColor(scenarioIndex);
+
+  const gradient = ctx.createLinearGradient(
+    0,
+    padding,
+    0,
+    canvasHeight() - padding
+  );
+
+  gradient.addColorStop(0, color + "22"); // ~13% opacity
+  gradient.addColorStop(1, color + "00"); // fade to transparent
+
+  ctx.save();
+  ctx.beginPath();
+
+  lineData.forEach((v, i) => {
+    const x = padding + (i * plotWidth()) / (lineData.length - 1);
+    const y = mapY(v, min, max);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+
+  // Close shape to bottom
+  ctx.lineTo(
+    padding + plotWidth(),
+    canvasHeight() - padding
+  );
+  ctx.lineTo(padding, canvasHeight() - padding);
+  ctx.closePath();
+
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.restore();
+}
+
 
 function drawContributionLine(lineData, min, max, scenarioIndex) {
   if (!lineData || !lineData.length) return;
@@ -853,7 +930,7 @@ function drawContributionLine(lineData, min, max, scenarioIndex) {
     // Apply font style based on fontStyles array
     const style = fontStyles[i];
     if (style === 'bold-large') {
-      ctx.font = "bold 20px Candara, 'Segoe UI', system-ui, sans-serif";
+      ctx.font = "bold 18px Candara, 'Segoe UI', system-ui, sans-serif";
     } else if (style === 'bold-medium') {
       ctx.font = "bold 16px Candara, 'Segoe UI', system-ui, sans-serif";
     } else if (style === 'bold') {
@@ -1138,3 +1215,27 @@ document.querySelectorAll(".scenario-arrow.next").forEach(el => {
     }
   });
 });
+
+function loadAppState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return false;
+
+  try {
+    const state = JSON.parse(raw);
+
+    if (!Array.isArray(state.scenarios)) return false;
+
+    scenarios = state.scenarios.map(s => ({
+      inputs: { ...s.inputs },
+      data: [],
+      contributionData: []
+    }));
+
+    activeScenarioIndex = state.activeScenarioIndex || 0;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+

@@ -179,6 +179,7 @@ input:focus {
 }
 .inputs-wrapper {
     margin-left: 20px;
+    min-width: 360px;
 }
 
 /* ---------- BUTTON ---------- */
@@ -296,10 +297,6 @@ button:hover {
 
 /* RIGHT SIDE GRAPH */
 
-.chart {
-  width: 480px;
-}
-
 #growthChart {
   display: block;
   width: 100%;
@@ -338,9 +335,11 @@ button:hover {
     padding-bottom: 16px;
   }
 
-.chart {
-    width: 100%;
-  }
+
+  .inputs-wrapper {
+    margin-left: 20px;
+    min-width: 320px;
+}
 }
 
 
@@ -822,32 +821,6 @@ opacity: .55;
   color: #f5f7fa;
 }
 
-.scenario-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 18px;
-    margin-bottom: -30px;
-
-}
-
-.scenario-switcher {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--card-bg);
-  border-radius: 14px;
-  padding: 10px 14px;
-  box-shadow: inset 0 0 0 1px var(--border-subtle);
-}
-
-.scenario-label {
-  font-size: 14px;
-  color: var(--text-muted);
-  letter-spacing: 0.2px;
-  margin-bottom: 20px;
-
-}
 
 .scenario-label strong {
   color: var(--text-primary);
@@ -885,7 +858,6 @@ opacity: .55;
 .dark .scenario-add:hover {
   background: rgba(255,255,255,0.06);
 }
-
 
 
 .scenario-arrow.disabled {
@@ -1037,12 +1009,6 @@ body.dark .ad-text {
 }
 
 
-.scenario-switcher {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
 .scenario-arrow {
   font-size: 18px;
   line-height: 1;
@@ -1068,4 +1034,47 @@ body.dark .ad-text {
 .scenario-arrow.hidden {
   opacity: 0;
   pointer-events: none;
+}
+
+
+
+
+
+
+
+.scenario-row {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Add this */
+  margin-top: 18px;
+  margin-bottom: -30px;
+}
+
+.scenario-switcher {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+.scenario-label {
+  font-size: 14px;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.scenario-add-row {
+  display: flex;
+  justify-content: center;
+  margin-top: -20px;
+  margin-bottom: 2px;
 }
